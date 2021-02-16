@@ -53,8 +53,16 @@ public class EmployeeRecyclerViewAdapter extends RecyclerView.Adapter<EmployeeRe
 
         @Override
         public void onClick(View view){
-            mItemClickListener.onItemClick(view, getAdapterPosition());
+            if (mItemClickListener != null) mItemClickListener.onItemClick(view, getAdapterPosition());
         }
+    }
+
+    public int getItem(int position){
+        return  mData.get(position).getId();
+    }
+
+    public void setClickListener(ItemClickListener itemClickListener){
+        this.mItemClickListener = itemClickListener;
     }
 
     public interface ItemClickListener {

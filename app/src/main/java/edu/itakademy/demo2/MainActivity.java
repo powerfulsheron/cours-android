@@ -3,6 +3,8 @@ package edu.itakademy.demo2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +17,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import edu.itakademy.demo2.adapter.EmployeeRecyclerViewAdapter;
+import edu.itakademy.demo2.entity.Employee;
 import edu.itakademy.demo2.helper.DatabaseHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements  EmployeeRecyclerViewAdapter.ItemClickListener {
+
+    EmployeeRecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,41 +35,31 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView);
         textView.setText("Hello les its");
 
+        RecyclerView recyclerView = findViewById(R.id.employeeRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        // Array des champs qu'on veut récuperer de la table
-        String[] projection = {
-                "id",
-                "firstname",
-                "lastname"
-        };
+        ArrayList<Employee> employees = new ArrayList<>();
 
-        String selection = "firstname" + " = ?";
-        String[] selectionArgs = {"Canavaggio"};
-        Cursor cursor = db.query(
-                "employee",
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-        if(cursor != null){
-            cursor.moveToFirst();
+        Cursor cursor = db.query("employee", null, null, null, null, null, null, null);
+
+        while(cursor.moveToNext()) {
+            Employee tempEmployee = new Employee();
+            tempEmployee.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            tempEmployee.setFirstname(cursor.getString(cursor.getColumnIndex("firstname")));
+            tempEmployee.setLastname(cursor.getString(cursor.getColumnIndex("lastname")));
+            tempEmployee.setAge(cursor.getInt(cursor.getColumnIndex("age")));
+            tempEmployee.setSalary(cursor.getInt(cursor.getColumnIndex("salary")));
+            employees.add(tempEmployee);
         }
-
-        Toast.makeText(this, cursor.getString(cursor.getColumnIndex("firstname")), Toast.LENGTH_SHORT).show();
-
-        // Select * sur la table employee
-        // Cursor cursor = db.query("employee", null, null, null, null, null, null, null)
-        // Cursor cursor = db.rawQuery("select * from employee", null);
 
         cursor.close();
 
-
-
+        adapter = new EmployeeRecyclerViewAdapter(this, employees);
+        adapter.setClickListener(this);
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -82,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
 
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Toast.makeText(this, "You cliked : " + String.valueOf(adapter.getItem(position)), Toast.LENGTH_SHORT).show();
     }
 
 
