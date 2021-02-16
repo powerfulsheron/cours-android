@@ -1,0 +1,9 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "Mon premier titre",
+      "body": "On teste le body"
+    }
+  ]
+}
