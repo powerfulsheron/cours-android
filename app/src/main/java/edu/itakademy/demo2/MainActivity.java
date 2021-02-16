@@ -67,4 +67,15 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    public void openHttpFormActivity(View view) {
+        Intent i = new Intent(this, HttpFormActivity.class);
+        startActivity(i);
+    }
+
+    public void openHttpListActivity(View view) {
+        Intent i = new Intent(this, HttpListActivity.class);
+        startActivity(i);
+    }
+
+
 }
